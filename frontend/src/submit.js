@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useStore } from './store';
 import { RunControls } from './RunControls';
 import { ResetControls } from './ResetControls';
+import { api } from './api';
 
 export const SubmitButton = () => {
   const nodes = useStore((s) => s.nodes);
@@ -14,17 +15,12 @@ export const SubmitButton = () => {
   const handleSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/pipelines/parse', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setValidation(data);
-      alert(`Nodes: ${data.num_nodes}\nEdges: ${data.num_edges}\nIs DAG: ${data.is_dag}`);
+      const res = await api.post('/pipelines/parse', { nodes, edges });
+      setValidation(res.data);
+      alert(`Nodes: ${res.data.num_nodes}\nEdges: ${res.data.num_edges}\nIs DAG: ${res.data.is_dag}`);
     } catch (e) {
-      alert(`Submission failed: ${e.message}.\nEnsure backend is running on 8000 and restart the frontend after proxy changes.`);
+      const errorMessage = e.response?.data?.detail || e.message;
+      alert(`Submission failed: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
