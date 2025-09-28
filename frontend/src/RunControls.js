@@ -48,9 +48,13 @@ export const RunControls = () => {
       });
 
   // Collect updates
-const updates = {
-  "customOutput-1": { value: data.output_text, result: data.output_text },
-};
+  const updates = nodes.reduce((acc, node) => {
+    acc[node.id] = { 
+      value: data.output_text, 
+      result: data.output_text 
+    };
+    return acc;
+  }, {});
 
 // Apply in one go
 useStore.getState().updateNodeFields(updates);

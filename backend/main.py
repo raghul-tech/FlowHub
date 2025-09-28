@@ -25,7 +25,7 @@ class EdgeModel(BaseModel):
     id: str | None = None
     source: str
     target: str
-    sourceHandle: str | None = None
+    sourceHandle: str | None = None 
     targetHandle: str | None = None
 
 
